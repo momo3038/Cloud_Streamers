@@ -18,8 +18,8 @@ class App extends Component {
       <div className="App">
         <header className="App-header">
           <h1 className="App-title">Cloud White App with {this.state.csp}</h1>
-          <button type="button" class={this.state.csp === "AWSAppSync" ? "btn btn-primary btn-sm" : "btn btn-outline-primary btn-sm"}  onClick={this.setCSP} data-csp="AWSAppSync" >AWS App Sync</button>
-          <button type="button" class={this.state.csp === "AzureSignalR" ? "btn btn-primary btn-sm" : "btn btn-outline-primary btn-sm"}  onClick={this.setCSP} data-csp="AzureSignalR"> Azure Signal R</button>
+          <button type="button" className={this.state.csp === "AWSAppSync" ? "btn btn-primary btn-sm" : "btn btn-outline-primary btn-sm"}  onClick={this.setCSP} data-csp="AWSAppSync" >AWS App Sync</button>
+          <button type="button" className={this.state.csp === "AzureSignalR" ? "btn btn-primary btn-sm" : "btn btn-outline-primary btn-sm"}  onClick={this.setCSP} data-csp="AzureSignalR"> Azure Signal R</button>
         </header>
 
         <div  >

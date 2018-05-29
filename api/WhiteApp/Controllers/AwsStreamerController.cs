@@ -42,7 +42,7 @@ namespace WhiteApp.Controllers
 
       var writer = new StringWriter();
 
-      var messages = 10;
+      var messages = 200;
       Task.Run(async () =>
       {
 

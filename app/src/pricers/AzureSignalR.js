@@ -4,31 +4,14 @@ import '../App.css';
 import { SimplePricer } from './SimplePricer';
 import * as signalr from '../azure/signalR'
 import { AZURE_CONF } from '../azure/configuration';
-import { Histogram } from '../histogram/Histogram'
+import { Histogram } from '../histogram/Histogram';
+import  * as HistogrammUtils from '../histogram/utils';
+
 
 class PricerAzureSignalR extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            latencyResult: {
-                lastLatency: undefined,
-                numberOfMessage: undefined,
-                maxLatency: undefined,
-                threeNinePercentile: undefined,
-                twoNinePercentile: undefined,
-                oneNinePercentile: undefined,
-                minLatency: undefined
-            },
-            latencyBtwMessageResult: {
-                lastLatency: undefined,
-                numberOfMessage: undefined,
-                maxLatency: undefined,
-                threeNinePercentile: undefined,
-                twoNinePercentile: undefined,
-                oneNinePercentile: undefined,
-                minLatency: undefined
-            }
-        }
+        this.state = HistogrammUtils.initState();
     }
 
     componentDidMount() {
@@ -49,7 +32,7 @@ class PricerAzureSignalR extends Component {
     render(props) {
         return (
             <div>
-                <button class="btn btn-success" onClick={this.askForStream}>Start streaming</button>
+                <button className="btn btn-success" onClick={this.askForStream}>Start streaming</button>
                 <div className="pricers">
                     <SimplePricer pair="EUR/USD" />
                     <SimplePricer pair="USD/JPY" />

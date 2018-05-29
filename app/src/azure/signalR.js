@@ -2,6 +2,8 @@ import * as signalR from '@aspnet/signalr';
 import { AZURE_CONF } from './configuration';
 import * as metrics from '../metrics/metrics';
 import * as hdr from "hdr-histogram-js";
+import * as histogram from "../histogram/utils"
+
 
 export const configureSignalR = (componentState) => {
   document.addEventListener('DOMContentLoaded', function () {
@@ -19,7 +21,7 @@ export const configureSignalR = (componentState) => {
     const latencyHistogram = hdr.build();
     const deltaBtwMessHistogram = hdr.build();
 
-    let timeStampInMs = metrics.getTimestampInMs();
+    let newTimestamp = metrics.getTimestampInMs();
 
     function bindConnectionMessage(connection) {
       var messageCallback = function (name, message) {
@@ -33,17 +35,16 @@ export const configureSignalR = (componentState) => {
         messageBox.innerHTML = "";
         if (encodedMsg !== undefined && encodedMsg !== null) {
           try {
-            const mess = JSON.parse(encodedMsg);
+            const receivedMessage = JSON.parse(encodedMsg);
 
-            const previousTimestamp = timeStampInMs;
+            const previousTimestamp = newTimestamp;
+            newTimestamp = metrics.getTimestampInMs();
+            histogram.updateLatencyHistogram(latencyHistogram, componentState, metrics.getRoundTripMessageResultInMs(receivedMessage.Timestamp, newTimestamp));
+            histogram.updateDeltaBtwMessHistogram(deltaBtwMessHistogram, componentState, Number(newTimestamp - previousTimestamp));
 
-            timeStampInMs = metrics.getTimestampInMs();
-            var rez = metrics.getDisplayResult(mess.Timestamp, timeStampInMs);
-            updateLatencyHistogram(latencyHistogram, componentState, rez);
-            updateDeltaBtwMessHistogram(deltaBtwMessHistogram, componentState, Number(timeStampInMs - previousTimestamp));
-            let messageHtml = "<p>Currency :" + mess.CurrencyType + "</p>";
-            messageHtml += "<p>Price :" + mess.Price + "</p>";
-            messageHtml += "<p>Mess N°" + mess.Id + "</p>";
+            let messageHtml = "<p>Currency :" + receivedMessage.CurrencyType + "</p>";
+            messageHtml += "<p>Price :" + receivedMessage.Price + "</p>";
+            messageHtml += "<p>Mess N°" + receivedMessage.Id + "</p>";
             messageBox.innerHTML = messageHtml;
           } catch (error) {
             messageBox.innerText = encodedMsg;
@@ -82,32 +83,4 @@ export const configureSignalR = (componentState) => {
         console.error(error.message);
       });
   });
-}
-
-function updateLatencyHistogram(histogram, componentState, newLatencyValue) {
-  histogram.recordValue(newLatencyValue);
-  componentState.setState({
-    latencyResult: createResultObj(newLatencyValue, histogram),
-    ...componentState
-  });
-}
-
-function updateDeltaBtwMessHistogram(histogram, componentState, newLatencyValue) {
-  histogram.recordValue(newLatencyValue);
-  componentState.setState({
-    latencyBtwMessageResult: createResultObj(newLatencyValue, histogram),
-    ...componentState
-  });
-}
-
-function createResultObj(newValue, histogram) {
-  return {
-    lastLatency: newValue,
-    numberOfMessage: histogram.getTotalCount(),
-    maxLatency: histogram.maxValue,
-    threeNinePercentile: histogram.getValueAtPercentile(99.9),
-    twoNinePercentile: histogram.getValueAtPercentile(99),
-    oneNinePercentile: histogram.getValueAtPercentile(90),
-    minLatency: histogram.minNonZeroValue
-  }
 }

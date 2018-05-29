@@ -5,46 +5,46 @@ function Histogram(props) {
   return (
     <form>
       <h4>{props.title}</h4>
-      <div class="form-group row">
-        <label for="lastPingValue" class="col-sm-6 col-form-label">Last value (ms)</label>
-        <div class="col-sm-3">
-          <input type="number" class="form-control form-control-sm" value={props.lastLatency} id="lastLatency" placeholder="Last latency" readonly="" />
+      <div className="form-group row">
+        <label htmlFor="lastPingValue" className="col-sm-6 col-form-label">Last value (ms)</label>
+        <div className="col-sm-3">
+          <input type="number" className="form-control form-control-sm" value={props.lastLatency} id="lastLatency" placeholder="Last latency" readOnly="" />
         </div>
       </div>
-      <div class="form-group row">
-        <label for="pingNumber" class="col-sm-6 col-form-label">Number of messages</label>
-        <div class="col-sm-3">
-          <input type="number" class="form-control form-control-sm" value={props.numberOfMessage} id="pingNumber" placeholder="Number of Mess" readonly="" />
+      <div className="form-group row">
+        <label htmlFor="pingNumber" className="col-sm-6 col-form-label">Number of messages</label>
+        <div className="col-sm-3">
+          <input type="number" className="form-control form-control-sm" value={props.numberOfMessage} id="pingNumber" placeholder="Number of Mess" readOnly="" />
         </div>
       </div>
-      <div class="form-group row">
-        <label for="maxPingValue" class="col-sm-6 col-form-label">Max</label>
-        <div class="col-sm-3">
-          <input type="number" class="form-control form-control-sm" id="maxPingValue" value={props.maxLatency} placeholder="Max Latency Value" readonly="" />
+      <div className="form-group row">
+        <label htmlFor="maxPingValue" className="col-sm-6 col-form-label">Max</label>
+        <div className="col-sm-3">
+          <input type="number" className="form-control form-control-sm" id="maxPingValue" value={props.maxLatency} placeholder="Max Latency Value" readOnly="" />
         </div>
       </div>
-      <div class="form-group row">
-        <label for="threeNinePercentile" class="col-sm-6 col-form-label">99.9%</label>
-        <div class="col-sm-3">
-          <input type="number" class="form-control form-control-sm" value={props.threeNinePercentile} id="threeNinePercentile" placeholder="99.9%" readonly="" />
+      <div className="form-group row">
+        <label htmlFor="threeNinePercentile" className="col-sm-6 col-form-label">99.9%</label>
+        <div className="col-sm-3">
+          <input type="number" className="form-control form-control-sm" value={props.threeNinePercentile} id="threeNinePercentile" placeholder="99.9%" readOnly="" />
         </div>
       </div>
-      <div class="form-group row">
-        <label for="twoNinePercentile" class="col-sm-6 col-form-label">99%</label>
-        <div class="col-sm-3">
-          <input type="number" class="form-control form-control-sm" id="twoNinePercentile" value={props.twoNinePercentile} placeholder="99%" readonly="" />
+      <div className="form-group row">
+        <label htmlFor="twoNinePercentile" className="col-sm-6 col-form-label">99%</label>
+        <div className="col-sm-3">
+          <input type="number" className="form-control form-control-sm" id="twoNinePercentile" value={props.twoNinePercentile} placeholder="99%" readOnly="" />
         </div>
       </div>
-      <div class="form-group row">
-        <label for="oneNinePercentile" class="col-sm-6 col-form-label">90%</label>
-        <div class="col-sm-3">
-          <input type="number" class="form-control form-control-sm" id="oneNinePercentile" value={props.oneNinePercentile}  placeholder="90%" readonly="" />
+      <div className="form-group row">
+        <label htmlFor="oneNinePercentile" className="col-sm-6 col-form-label">90%</label>
+        <div className="col-sm-3">
+          <input type="number" className="form-control form-control-sm" id="oneNinePercentile" value={props.oneNinePercentile}  placeholder="90%" readOnly="" />
         </div>
       </div>
-      <div class="form-group row">
-        <label for="minPingValue" class="col-sm-6 col-form-label">Min</label>
-        <div class="col-sm-3">
-          <input type="number" class="form-control form-control-sm" id="minPingValue" value={props.minLatency} placeholder="Min Latency Value" readonly="" />
+      <div className="form-group row">
+        <label htmlFor="minPingValue" className="col-sm-6 col-form-label">Min</label>
+        <div className="col-sm-3">
+          <input type="number" className="form-control form-control-sm" id="minPingValue" value={props.minLatency} placeholder="Min Latency Value" readOnly="" />
         </div>
       </div>
     </form>

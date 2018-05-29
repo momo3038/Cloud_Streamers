@@ -3,15 +3,17 @@ import AWSAppSyncClient from "aws-appsync";
 import { AUTH_TYPE } from "aws-appsync/lib/link/auth-link";
 import { AWS_CONF } from './configuration';
 import * as metrics from '../metrics/metrics';
+import * as hdr from "hdr-histogram-js";
+import * as histogram from "../histogram/utils"
 
 
 const appSyncClient = new AWSAppSyncClient({
-  url: AWS_CONF.graphQlEndpoint,
-  region: AWS_CONF.region,
-  auth: {
-      type: AUTH_TYPE.API_KEY,
-      apiKey: AWS_CONF.apiKey,
-  }
+    url: AWS_CONF.graphQlEndpoint,
+    region: AWS_CONF.region,
+    auth: {
+        type: AUTH_TYPE.API_KEY,
+        apiKey: AWS_CONF.apiKey,
+    }
 });
 
 const getPriceQuery = gql(`
@@ -33,29 +35,39 @@ updatedPrice(id:1) {
 }`);
 
 
-export const startAppSyncClient = () => {
-  appSyncClient.hydrated().then(function (client) {
-      client.query({ query: getPriceQuery })
-          .then(function logData(data) {
-              console.log('results of query: ', data);
-          })
-          .catch(console.error);
-      const observable = client.subscribe({ query: updatePriceSubscriptionQuery });
-      let timeStampInMs = metrics.getTimestampInMs();
-      const realtimeResults = function realtimeResults(data) {
-          timeStampInMs = metrics.getTimestampInMs();
-          var updatedData = data.data.updatedPrice;
-          metrics.getDisplayResult(updatedData.timestampInMs, timeStampInMs);
-          var messageBox = document.getElementById('messages');
-          let messageHtml = "<p>Currency :" + updatedData.typeCurrency + "</p>";
-          messageHtml += "<p>Price :" + updatedData.price + "</p>";
-          messageHtml += "<p>Mess N°" + updatedData.id + "</p>";
-          messageBox.innerHTML = messageHtml;
-      };
-      observable.subscribe({
-          next: realtimeResults,
-          complete: console.log,
-          error: console.log,
-      });
-  });
+export const startAppSyncClient = (componentState) => {
+
+    const latencyHistogram = hdr.build();
+    const deltaBtwMessHistogram = hdr.build();
+
+
+    appSyncClient.hydrated().then(function (client) {
+        client.query({ query: getPriceQuery })
+            .then(function logData(data) {
+                console.log('results of query: ', data);
+            })
+            .catch(console.error);
+        const observable = client.subscribe({ query: updatePriceSubscriptionQuery });
+        let newTimestamp = metrics.getTimestampInMs();
+
+        const realtimeResults = function realtimeResults(data) {
+            var updatedData = data.data.updatedPrice;
+
+            const previousTimestamp = newTimestamp;
+            newTimestamp = metrics.getTimestampInMs();
+            histogram.updateLatencyHistogram(latencyHistogram, componentState, metrics.getRoundTripMessageResultInMs(updatedData.timestampInMs, newTimestamp));
+            histogram.updateDeltaBtwMessHistogram(deltaBtwMessHistogram, componentState, Number(newTimestamp - previousTimestamp));
+
+            var messageBox = document.getElementById('messages');
+            let messageHtml = "<p>Currency :" + updatedData.typeCurrency + "</p>";
+            messageHtml += "<p>Price :" + updatedData.price + "</p>";
+            messageHtml += "<p>Mess N°" + updatedData.id + "</p>";
+            messageBox.innerHTML = messageHtml;
+        };
+        observable.subscribe({
+            next: realtimeResults,
+            complete: console.log,
+            error: console.log,
+        });
+    });
 }
