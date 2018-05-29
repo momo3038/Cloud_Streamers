@@ -53,7 +53,7 @@ namespace WhiteApp.Controllers
                     long elapsed = Stopwatch.GetTimestamp() - startTimestamp;
                     histogram.RecordValue(elapsed);
 
-                    await Task.Delay(10).ConfigureAwait(false);
+                    await Task.Delay(50).ConfigureAwait(false);
                 }
                 var scalingRatio = OutputScalingFactor.TimeStampToMilliseconds;
                 histogram.OutputPercentileDistribution(

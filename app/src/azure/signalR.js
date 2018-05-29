@@ -1,7 +1,9 @@
 import * as signalR from '@aspnet/signalr';
 import { AZURE_CONF } from './configuration';
+import * as metrics from '../metrics/metrics';
+import * as hdr from "hdr-histogram-js";
 
-export const configureSignalR = () => {
+export const configureSignalR = (componentState) => {
   document.addEventListener('DOMContentLoaded', function () {
 
     function generateRandomName() {
@@ -14,11 +16,10 @@ export const configureSignalR = () => {
       value: "Hello W!"
     }
 
-    var timeStampInMs = undefined;
+    const latencyHistogram = hdr.build();
+    const deltaBtwMessHistogram = hdr.build();
 
-    function getTimestamp() {
-      return window.performance && window.performance.now && window.performance.timing && window.performance.timing.navigationStart ? window.performance.now() + window.performance.timing.navigationStart : Date.now();
-    }
+    let timeStampInMs = metrics.getTimestampInMs();
 
     function bindConnectionMessage(connection) {
       var messageCallback = function (name, message) {
@@ -32,20 +33,14 @@ export const configureSignalR = () => {
         messageBox.innerHTML = "";
         if (encodedMsg !== undefined && encodedMsg !== null) {
           try {
-
-            if (timeStampInMs === undefined) {
-              timeStampInMs = getTimestamp();
-            }
-
             const mess = JSON.parse(encodedMsg);
 
             const previousTimestamp = timeStampInMs;
-            timeStampInMs = getTimestamp();
 
-            console.log(timeStampInMs, Number(mess.Timestamp), Number((timeStampInMs - Number(mess.Timestamp))));
-
-
-            console.log("Diff : " + Number(timeStampInMs - previousTimestamp));
+            timeStampInMs = metrics.getTimestampInMs();
+            var rez = metrics.getDisplayResult(mess.Timestamp, timeStampInMs);
+            updateLatencyHistogram(latencyHistogram, componentState, rez);
+            updateDeltaBtwMessHistogram(deltaBtwMessHistogram, componentState, Number(timeStampInMs - previousTimestamp));
             let messageHtml = "<p>Currency :" + mess.CurrencyType + "</p>";
             messageHtml += "<p>Price :" + mess.Price + "</p>";
             messageHtml += "<p>Mess N°" + mess.Id + "</p>";
@@ -87,4 +82,32 @@ export const configureSignalR = () => {
         console.error(error.message);
       });
   });
+}
+
+function updateLatencyHistogram(histogram, componentState, newLatencyValue) {
+  histogram.recordValue(newLatencyValue);
+  componentState.setState({
+    latencyResult: createResultObj(newLatencyValue, histogram),
+    ...componentState
+  });
+}
+
+function updateDeltaBtwMessHistogram(histogram, componentState, newLatencyValue) {
+  histogram.recordValue(newLatencyValue);
+  componentState.setState({
+    latencyBtwMessageResult: createResultObj(newLatencyValue, histogram),
+    ...componentState
+  });
+}
+
+function createResultObj(newValue, histogram) {
+  return {
+    lastLatency: newValue,
+    numberOfMessage: histogram.getTotalCount(),
+    maxLatency: histogram.maxValue,
+    threeNinePercentile: histogram.getValueAtPercentile(99.9),
+    twoNinePercentile: histogram.getValueAtPercentile(99),
+    oneNinePercentile: histogram.getValueAtPercentile(90),
+    minLatency: histogram.minNonZeroValue
+  }
 }

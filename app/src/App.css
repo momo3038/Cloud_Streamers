@@ -35,3 +35,10 @@
   background-color: #222;
   color: white;
 }
+
+.histograms {
+  display: flex;
+  flex-flow: wrap;
+  justify-content: space-around;
+}
+
