@@ -27,16 +27,17 @@ namespace AzureWhiteApp
     public void ConfigureServices(IServiceCollection services)
     {
       var apiKey = Configuration.GetValue<string>("azure_streamer_endpoint");
-      var localhostUrl = Configuration.GetValue<string>("localhost_url");
 
       services.AddCors();
       services.AddMvc();
       services.AddSignalR()
-              .AddAzureSignalR(apiKey));
+              .AddAzureSignalR(apiKey);
     }
 
     public void Configure(IApplicationBuilder app,  IHostingEnvironment env)
     {
+      var localhostUrl = Configuration.GetValue<string>("localhost_url");
+      
       app.UseCors("AllowAllCorsPolicy");
       app.UseMvc();
       app.UseFileServer();

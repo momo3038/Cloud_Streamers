@@ -15,7 +15,7 @@ class PricerAWSAppSync extends Component {
     }
 
     askForStream() {
-        fetch(AWS_CONF.FetchStreamUrl)
+        fetch(AWS_CONF.fetchStreamUrl)
             .then(function (response) {
 
             });

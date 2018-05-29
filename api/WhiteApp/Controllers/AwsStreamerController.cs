@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using HdrHistogram;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
 namespace WhiteApp.Controllers
 {
@@ -18,11 +19,15 @@ namespace WhiteApp.Controllers
     private string ApiKey;
     private string GraphQlEndpoint;
 
-    public AwsStreamerController()
+    public AwsStreamerController(IConfiguration configuration)
     {
+      Configuration = configuration;
       ApiKey = Configuration.GetValue<string>("aws_app_sync_key");
       GraphQlEndpoint = Configuration.GetValue<string>("graphql_endpoint");
     }
+
+    public IConfiguration Configuration { get; }
+
 
     [Route("/api/appsync-streamer/")]
     [HttpGet]
