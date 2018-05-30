@@ -2,10 +2,11 @@
 import React, { Component } from 'react';
 import '../App.css';
 import { SimplePricer } from './SimplePricer';
-import { AWS_CONF } from '../aws/configuration';
+import { AWS_APP_SYNC_CONF } from '../aws/appSyncConfiguration';
 import * as graphQl from '../aws/graphql';
 import { Histogram } from '../histogram/Histogram'
-import  * as HistogrammUtils from '../histogram/utils';
+import * as HistogrammUtils from '../histogram/utils';
+import { StartStream } from './StartStream';
 
 
 class PricerAWSAppSync extends Component {
@@ -15,20 +16,14 @@ class PricerAWSAppSync extends Component {
     }
 
     componentDidMount() {
-        graphQl.startAppSyncClient(this);
-    }
-
-    askForStream() {
-        fetch(AWS_CONF.fetchStreamUrl)
-            .then(function (response) {
-
-            });
+        graphQl.startClient(this);
     }
 
     render(props) {
         return (
             <div>
-                <button className="btn btn-success" onClick={this.askForStream} >Start streaming</button>
+                <StartStream fetchUrl={AWS_APP_SYNC_CONF.fetchStreamUrl} />
+
                 <div className="pricers">
                     <SimplePricer pair="EUR/USD" />
                     <SimplePricer pair="USD/JPY" />
@@ -39,7 +34,7 @@ class PricerAWSAppSync extends Component {
                     <Histogram {...this.state.latencyResult} title="Message Latency (Back -> CSP -> Front)" />
                     <Histogram {...this.state.latencyBtwMessageResult} title="Delta between Message (Back = 50 ms)" />
                 </div>
-            </div>
+            </div >
         );
     }
 }

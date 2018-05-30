@@ -20,9 +20,7 @@ export const configureSignalR = (componentState) => {
 
     const latencyHistogram = hdr.build();
     const deltaBtwMessHistogram = hdr.build();
-
     let newTimestamp = metrics.getTimestampInMs();
-
     function bindConnectionMessage(connection) {
       var messageCallback = function (name, message) {
 
@@ -68,6 +66,7 @@ export const configureSignalR = (componentState) => {
     function onConnectionError(error) {
       if (error && error.message) {
         console.error(error.message);
+        latencyHistogram.outputPercentileDistribution();
       }
     }
 

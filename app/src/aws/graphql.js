@@ -1,18 +1,18 @@
 import gql from "graphql-tag";
 import AWSAppSyncClient from "aws-appsync";
 import { AUTH_TYPE } from "aws-appsync/lib/link/auth-link";
-import { AWS_CONF } from './configuration';
+import { AWS_APP_SYNC_CONF } from './appSyncConfiguration';
 import * as metrics from '../metrics/metrics';
 import * as hdr from "hdr-histogram-js";
 import * as histogram from "../histogram/utils"
 
 
 const appSyncClient = new AWSAppSyncClient({
-    url: AWS_CONF.graphQlEndpoint,
-    region: AWS_CONF.region,
+    url: AWS_APP_SYNC_CONF.graphQlEndpoint,
+    region: AWS_APP_SYNC_CONF.region,
     auth: {
         type: AUTH_TYPE.API_KEY,
-        apiKey: AWS_CONF.apiKey,
+        apiKey: AWS_APP_SYNC_CONF.apiKey,
     }
 });
 
@@ -35,7 +35,7 @@ updatedPrice(id:1) {
 }`);
 
 
-export const startAppSyncClient = (componentState) => {
+export const startClient = (componentState) => {
 
     const latencyHistogram = hdr.build();
     const deltaBtwMessHistogram = hdr.build();

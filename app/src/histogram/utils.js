@@ -24,7 +24,9 @@ export function initState(){
       threeNinePercentile: "",
       twoNinePercentile: "",
       oneNinePercentile: "",
-      minLatency: ""
+      minLatency: "",
+      mean: "",
+      fiftyPercentile: ""
     },
     latencyBtwMessageResult: {
       lastLatency: "",
@@ -33,7 +35,9 @@ export function initState(){
       threeNinePercentile: "",
       twoNinePercentile: "",
       oneNinePercentile: "",
-      minLatency: ""
+      minLatency: "",
+      mean: "",
+      fiftyPercentile: ""
     }
   }
 }
@@ -46,6 +50,8 @@ function createResultObj(newValue, histogram) {
     threeNinePercentile: histogram.getValueAtPercentile(99.9),
     twoNinePercentile: histogram.getValueAtPercentile(99),
     oneNinePercentile: histogram.getValueAtPercentile(90),
-    minLatency: histogram.minNonZeroValue
+    minLatency: histogram.minNonZeroValue,
+    mean: histogram.getMean(),
+    fiftyPercentile: histogram.getValueAtPercentile(50)
   }
 }

@@ -47,6 +47,18 @@ function Histogram(props) {
           <input type="number" className="form-control form-control-sm" id="minPingValue" value={props.minLatency} placeholder="Min Latency Value" readOnly="" />
         </div>
       </div>
+      <div className="form-group row">
+        <label htmlFor="minPingValue" className="col-sm-6 col-form-label">Mean</label>
+        <div className="col-sm-3">
+          <input type="number" className="form-control form-control-sm" id="minPingValue" value={props.mean} placeholder="Mean Latency Value" readOnly="" />
+        </div>
+      </div>
+      <div className="form-group row">
+        <label htmlFor="minPingValue" className="col-sm-6 col-form-label">50%</label>
+        <div className="col-sm-3">
+          <input type="number" className="form-control form-control-sm" id="minPingValue" value={props.fiftyPercentile} placeholder="50%" readOnly="" />
+        </div>
+      </div>
     </form>
   );
 }

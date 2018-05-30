@@ -2,31 +2,27 @@
 import React, { Component } from 'react';
 import '../App.css';
 import { SimplePricer } from './SimplePricer';
-import * as signalr from '../azure/signalR'
-import { AZURE_CONF } from '../azure/configuration';
-import { Histogram } from '../histogram/Histogram';
+import { AWS_MQ_CONF } from '../aws/mqConfiguration';
+import { Histogram } from '../histogram/Histogram'
 import * as HistogrammUtils from '../histogram/utils';
+import * as activeMq from '../aws/activeMq';
 import { StartStream } from './StartStream';
 
 
-class PricerAzureSignalR extends Component {
+class PricerAWSMQ extends Component {
     constructor(props) {
         super(props);
         this.state = HistogrammUtils.initState();
     }
 
     componentDidMount() {
-        signalr.configureSignalR(this);
-    }
-
-    componentWillUnmount() {
-
+        activeMq.startClient(this);
     }
 
     render(props) {
         return (
             <div>
-                <StartStream fetchUrl={AZURE_CONF.fetchStreamUrl} />
+                <StartStream fetchUrl={AWS_MQ_CONF.fetchStreamUrl} />
                 <div className="pricers">
                     <SimplePricer pair="EUR/USD" />
                     <SimplePricer pair="USD/JPY" />
@@ -42,4 +38,4 @@ class PricerAzureSignalR extends Component {
     }
 }
 
-export default PricerAzureSignalR;
+export default PricerAWSMQ;
