@@ -5,21 +5,7 @@
 - npm start
 
 # Backend Configuration
-## AWS
-1 - Get API Key and Graph QL Endpoint URL from the AWS Console
-2 - Setup backend conf
-In the CS Proj folder :
-- dotnet user-secrets set Streamer:Aws:AppSync:Scenario1:Key YOUR_API_KEY
-- dotnet user-secrets set Streamer:Aws:AppSync:Scenario1:Endpoint https://YOUR_END_POINT.appsync-api.REGION.amazonaws.com/graphql
-- dotnet user-secrets set Streamer:Aws:AppSync:Scenario2:Key YOUR_API_KEY
-- dotnet user-secrets set Streamer:Aws:AppSync:Scenario2:Endpoint https://YOUR_END_POINT.appsync-api.REGION.amazonaws.com/graphql
 
-
-- dotnet user-secrets set Streamer:Aws:Mq:Endpoint https://YOUR_END_POINT.appsync-api.REGION.amazonaws.com/graphql
-- dotnet user-secrets set Streamer:Aws:Mq:Login https://YOUR_END_POINT.appsync-api.REGION.amazonaws.com/graphql
-- dotnet user-secrets set Streamer:Aws:Mq:Mdp https://YOUR_END_POINT.appsync-api.REGION.amazonaws.com/graphql
-
-## Azure
 1 - Get API Key and SignalR Endpoint URL from the Azure Console
 2 - Setup backend conf
 In the CS Proj folder :
@@ -28,6 +14,21 @@ In the CS Proj folder :
 3 - Start bridge
 - dotnet restore
 - run !
+
+```json
+{
+  "Streamer:Aws:AppSync:Scenario1:Endpoint": "https://ENDPOINT.appsync-api.eu-west-1.amazonaws.com/graphql",
+  "Streamer:Aws:AppSync:Scenario1:Key": "KEY",
+  "Streamer:Aws:AppSync:Scenario2:Endpoint": "https://ENDPOINT.appsync-api.eu-west-1.amazonaws.com/graphql",
+  "Streamer:Aws:AppSync:Scenario2:Key": "KEY",
+  "Streamer:Aws:Mq:Login": "LOGIN",
+  "Streamer:Aws:Mq:Mdp": "PASSWORD",
+  "Streamer:Aws:Mq:Endpoint": "activemq:ssl://ENDPOINT.mq.eu-west-1.amazonaws.com:61617",
+  "Streamer:Azure:Endpoint": "Endpoint=https://ENDPOINT.service.signalr.net;AccessKey=ACCESS_KEY",
+  "Streamer:Http:CORS": "http://localhost:3000"
+}
+```
+
 
 # Run baby, run
 3 - Start bridge
