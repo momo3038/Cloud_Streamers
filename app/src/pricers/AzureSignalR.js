@@ -28,9 +28,11 @@ class PricerAzureSignalR extends Component {
             <div>
                 <StartStream fetchUrl={AZURE_CONF.fetchStreamUrl} />
                 <div className="pricers">
-                    <SimplePricer pair="EUR/USD" />
-                    <SimplePricer pair="USD/JPY" />
-                    <SimplePricer pair="EUR/JPY" />
+                    <SimplePricer pair="EUR/USD" id="messages-eur_usd" />
+                    <SimplePricer pair="EUR/JPY" id="messages-eur_jpy" />
+                    <SimplePricer pair="EUR/GBP" id="messages-eur_gbp" />
+                    <SimplePricer pair="USD/JPY" id="messages-usd_jpy" />
+                    <SimplePricer pair="USD/GBP" id="messages-usd_gbp" />
                 </div>
 
                 <div className="histograms">

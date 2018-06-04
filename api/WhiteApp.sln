@@ -3,9 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2000
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AwsWhiteApp", "WhiteApp\AwsWhiteApp.csproj", "{7AAE0D2E-D93D-46A5-9123-32E2E27F8573}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureWhiteApp", "AzureWhiteApp\AzureWhiteApp.csproj", "{86ED8933-587F-4D71-BAF3-3BD1CD18DB50}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WhiteApp", "WhiteApp\WhiteApp.csproj", "{7AAE0D2E-D93D-46A5-9123-32E2E27F8573}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

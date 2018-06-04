@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/AzureWhiteApp/AzureWhiteApp.csproj"
+                "${workspaceFolder}/WhiteApp/WhiteApp.csproj"
             ],
             "problemMatcher": "$msCompile"
         }

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 
-namespace AzureWhiteApp.Hub
+namespace WhiteApp.Hub
 {
     public class Streamer : Microsoft.AspNetCore.SignalR.Hub
     {
@@ -21,10 +21,9 @@ namespace AzureWhiteApp.Hub
             Clients.Client(Context.ConnectionId).SendAsync("echo", name, message + " (echo from server)");
         }
 
-
-        public void AddGroup()
+        public void AddCurrencyPair(string currencyPair)
         {
-            this.hubContext.Groups.AddToGroupAsync(Context.ConnectionId, "myGroup");
+            this.hubContext.Groups.AddToGroupAsync(Context.ConnectionId, currencyPair);
         }
     }
 }

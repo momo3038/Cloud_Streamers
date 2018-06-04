@@ -29,12 +29,28 @@ export const configureSignalR = (componentState) => {
         var encodedName = name;
         var encodedMsg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
-        var messageBox = document.getElementById('messages');
-        messageBox.innerHTML = "";
+
         if (encodedMsg !== undefined && encodedMsg !== null) {
           try {
             const receivedMessage = JSON.parse(encodedMsg);
 
+            let id = "";
+            switch (receivedMessage.CurrencyType) {
+              case "EUR/USD": id = "messages-eur_usd";
+                break;
+              case "EUR/JPY": id = "messages-eur_jpy";
+                break;
+              case "EUR/GBP": id = "messages-eur_gbp";
+                break;
+                case "USD/JPY": id = "messages-usd_jpy";
+                break;
+              case "USD/GBP": id = "messages-usd_gbp";
+                break;
+            }
+            var messageBox = document.getElementById(id);
+            messageBox.innerHTML = "";
+
+            // console.log(receivedMessage);
             const previousTimestamp = newTimestamp;
             newTimestamp = metrics.getTimestampInMs();
             histogram.updateLatencyHistogram(latencyHistogram, componentState, metrics.getRoundTripMessageResultInMs(receivedMessage.Timestamp, newTimestamp));
@@ -45,7 +61,7 @@ export const configureSignalR = (componentState) => {
             messageHtml += "<p>Mess N°" + receivedMessage.Id + "</p>";
             messageBox.innerHTML = messageHtml;
           } catch (error) {
-            messageBox.innerText = encodedMsg;
+            //messageBox.innerText = encodedMsg;
           }
 
         }
@@ -59,7 +75,11 @@ export const configureSignalR = (componentState) => {
     function onConnected(connection) {
       console.log('connection started');
       connection.send('broadcastMessage', '_SYSTEM_', 'Connection started, waiting for streaming');
-      connection.send("AddGroup");
+      connection.send("AddCurrencyPair", "EUR/USD");
+      connection.send("AddCurrencyPair", "EUR/JPY");
+      connection.send("AddCurrencyPair", "EUR/GBP");
+      connection.send("AddCurrencyPair", "USD/GBP");
+      connection.send("AddCurrencyPair", "USD/JPY");
     }
 
 

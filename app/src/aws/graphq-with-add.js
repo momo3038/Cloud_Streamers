@@ -1,35 +1,24 @@
 import gql from "graphql-tag";
 import AWSAppSyncClient from "aws-appsync";
 import { AUTH_TYPE } from "aws-appsync/lib/link/auth-link";
-import { AWS_APP_SYNC_CONF_WITH_UPDATE } from './appSyncConfiguration';
+import { AWS_APP_SYNC_CONF_WITH_ADD } from './appSyncConfiguration';
 import * as metrics from '../metrics/metrics';
 import * as hdr from "hdr-histogram-js";
 import * as histogram from "../histogram/utils"
 
 
 const appSyncClient = new AWSAppSyncClient({
-    url: AWS_APP_SYNC_CONF_WITH_UPDATE.graphQlEndpoint,
-    region: AWS_APP_SYNC_CONF_WITH_UPDATE.region,
+    url: AWS_APP_SYNC_CONF_WITH_ADD.graphQlEndpoint,
+    region: AWS_APP_SYNC_CONF_WITH_ADD.region,
     auth: {
         type: AUTH_TYPE.API_KEY,
-        apiKey: AWS_APP_SYNC_CONF_WITH_UPDATE.apiKey,
+        apiKey: AWS_APP_SYNC_CONF_WITH_ADD.apiKey,
     }
 });
 
-const getPriceQuery = gql(`
-query getPrice {
-getPrice(id: 1)  {
-  __typename
-  id
-  typeCurrency
-  price
-  timestampInMs
-}
-}`);
-
 const updatePriceSubscriptionQuery = gql(`
-subscription updatedPrice {
-updatedPrice(id:1) {
+subscription addPrice {
+    addPrice(currencyType:"EUR/USD") {
   __typename
 }
 }`);
@@ -40,18 +29,12 @@ export const startClient = (componentState) => {
     const latencyHistogram = hdr.build();
     const deltaBtwMessHistogram = hdr.build();
 
-
     appSyncClient.hydrated().then(function (client) {
-        client.query({ query: getPriceQuery })
-            .then(function logData(data) {
-                console.log('results of query: ', data);
-            })
-            .catch(console.error);
         const observable = client.subscribe({ query: updatePriceSubscriptionQuery });
         let newTimestamp = metrics.getTimestampInMs();
 
         const realtimeResults = function realtimeResults(data) {
-            var updatedData = data.data.updatedPrice;
+            var updatedData = data.data.addPrice;
 
             const previousTimestamp = newTimestamp;
             newTimestamp = metrics.getTimestampInMs();
@@ -59,7 +42,7 @@ export const startClient = (componentState) => {
             histogram.updateDeltaBtwMessHistogram(deltaBtwMessHistogram, componentState, Number(newTimestamp - previousTimestamp));
 
             var messageBox = document.getElementById('messages');
-            let messageHtml = "<p>Currency :" + updatedData.typeCurrency + "</p>";
+            let messageHtml = "<p>Currency :" + updatedData.currencyType + "</p>";
             messageHtml += "<p>Price :" + updatedData.price + "</p>";
             messageHtml += "<p>Mess N°" + updatedData.id + "</p>";
             messageBox.innerHTML = messageHtml;
