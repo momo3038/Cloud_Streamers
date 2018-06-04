@@ -50,7 +50,7 @@ export const configureSignalR = (componentState) => {
             var messageBox = document.getElementById(id);
             messageBox.innerHTML = "";
 
-            // console.log(receivedMessage);
+            //  console.log(receivedMessage);
             const previousTimestamp = newTimestamp;
             newTimestamp = metrics.getTimestampInMs();
             histogram.updateLatencyHistogram(latencyHistogram, componentState, metrics.getRoundTripMessageResultInMs(receivedMessage.Timestamp, newTimestamp));

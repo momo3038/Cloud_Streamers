@@ -5,11 +5,12 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using WhiteApp;
-using WhiteApp.Hub;
+using AzureWhiteApp.Hub;
 using HdrHistogram;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
+using AzureWhiteApp;
 
 namespace WhiteApp.Controllers
 {

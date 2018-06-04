@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using HdrHistogram;
 
-namespace WhiteApp
+namespace AwsWhiteApp
 {
   public static class AwsAppSyncUtils
   {

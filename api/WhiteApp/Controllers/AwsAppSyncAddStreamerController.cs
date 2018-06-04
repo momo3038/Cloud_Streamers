@@ -16,7 +16,7 @@ using HdrHistogram;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
-
+using AwsWhiteApp;
 
 namespace WhiteApp.Controllers
 {
@@ -28,8 +28,8 @@ namespace WhiteApp.Controllers
     public AwsAppSyncAddStreamerController(IConfiguration configuration)
     {
       Configuration = configuration;
-      ApiKey = Configuration.GetValue<string>("Streamer:Aws:AppSync:Scenario1:Key");
-      GraphQlEndpoint = Configuration.GetValue<string>("Streamer:Aws:AppSync:Scenario1:Endpoint");
+      ApiKey = Configuration.GetValue<string>("Streamer:Aws:AppSync:Scenario2:Key");
+      GraphQlEndpoint = Configuration.GetValue<string>("Streamer:Aws:AppSync:Scenario2:Endpoint");
     }
 
     public IConfiguration Configuration { get; }

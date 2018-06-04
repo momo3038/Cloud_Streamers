@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.SignalR;
 
-namespace WhiteApp.Hub
+namespace AzureWhiteApp.Hub
 {
     public class Streamer : Microsoft.AspNetCore.SignalR.Hub
     {
