@@ -7,10 +7,7 @@
 # Backend Configuration
 
 1 - Get API Key and SignalR Endpoint URL from the Azure Console
-2 - Setup backend conf
-In the CS Proj folder :
-- dotnet user-secrets set Streamer:Azure:Endpoint Endpoint=https://MY_STREAMER.service.signalr.net;AccessKey=MY_KEY;
-- dotnet user-secrets set Streamer:Http:CORS http://localhost:3000
+2 - Setup backend conf by editing file secrets.json
 3 - Start bridge
 - dotnet restore
 - run !
@@ -28,9 +25,3 @@ In the CS Proj folder :
   "Streamer:Http:CORS": "http://localhost:3000"
 }
 ```
-
-
-# Run baby, run
-3 - Start bridge
-- dotnet restore
-- run !
