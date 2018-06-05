@@ -47,7 +47,8 @@ namespace WhiteApp.Controllers
                   Id = i,
                   CurrencyType = pair,
                   Price = rd.NextDouble(),
-                  Timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString()
+                  Timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString(),
+                  Ladders = new LadderFactory().Build(10)
                 };
 
                 var cur = JsonConvert.SerializeObject(currency);

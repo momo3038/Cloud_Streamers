@@ -2,22 +2,29 @@
 export function updateLatencyHistogram(histogram, componentState, newLatencyValue) {
   histogram.recordValue(newLatencyValue);
   componentState.setState({
-    latencyResult: createResultObj(newLatencyValue, histogram),
-    ...componentState
+    ...componentState.state,
+    histograms: {
+      latencyResult: { ...componentState.state.histograms.latencyResult, ...createResultObj(newLatencyValue, histogram) },
+      latencyBtwMessageResult: componentState.state.histograms.latencyBtwMessageResult,
+    },
   });
 }
 
 export function updateDeltaBtwMessHistogram(histogram, componentState, newLatencyValue) {
   histogram.recordValue(newLatencyValue);
   componentState.setState({
-    latencyBtwMessageResult: createResultObj(newLatencyValue, histogram),
-    ...componentState
+    ...componentState.state,
+    histograms: {
+      latencyBtwMessageResult: { ...componentState.state.histograms.latencyBtwMessageResult, ...createResultObj(newLatencyValue, histogram) },
+      latencyResult: componentState.state.histograms.latencyResult
+    },
   });
 }
 
-export function initState(){
+export function initState() {
   return {
     latencyResult: {
+      title: "Message Latency (Back -> CSP -> Front)",
       lastLatency: "",
       numberOfMessage: "",
       maxLatency: "",
@@ -29,6 +36,7 @@ export function initState(){
       fiftyPercentile: ""
     },
     latencyBtwMessageResult: {
+      title: "Delta between Message (Back = 50 ms)",
       lastLatency: "",
       numberOfMessage: "",
       maxLatency: "",

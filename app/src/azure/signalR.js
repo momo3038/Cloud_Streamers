@@ -8,16 +8,6 @@ import * as histogram from "../histogram/utils"
 export const configureSignalR = (componentState) => {
   document.addEventListener('DOMContentLoaded', function () {
 
-    function generateRandomName() {
-      return Math.random().toString(36).substring(2, 10);
-    }
-
-    // Get the user name and store it to prepend to messages.
-    var username = generateRandomName();
-    var messageInput = {
-      value: "Hello W!"
-    }
-
     const latencyHistogram = hdr.build();
     const deltaBtwMessHistogram = hdr.build();
     let newTimestamp = metrics.getTimestampInMs();
@@ -25,8 +15,7 @@ export const configureSignalR = (componentState) => {
       var messageCallback = function (name, message) {
 
         if (!message) return;
-        // Html encode display name and message.
-        var encodedName = name;
+
         var encodedMsg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 
@@ -34,6 +23,11 @@ export const configureSignalR = (componentState) => {
           try {
             const receivedMessage = JSON.parse(encodedMsg);
 
+            const previousTimestamp = newTimestamp;
+            newTimestamp = metrics.getTimestampInMs();
+            histogram.updateLatencyHistogram(latencyHistogram, componentState, metrics.getRoundTripMessageResultInMs(receivedMessage.Timestamp, newTimestamp));
+            histogram.updateDeltaBtwMessHistogram(deltaBtwMessHistogram, componentState, Number(newTimestamp - previousTimestamp));
+            
             let id = "";
             switch (receivedMessage.CurrencyType) {
               case "EUR/USD": id = "messages-eur_usd";
@@ -42,19 +36,14 @@ export const configureSignalR = (componentState) => {
                 break;
               case "EUR/GBP": id = "messages-eur_gbp";
                 break;
-                case "USD/JPY": id = "messages-usd_jpy";
+              case "USD/JPY": id = "messages-usd_jpy";
                 break;
               case "USD/GBP": id = "messages-usd_gbp";
-                break;
             }
             var messageBox = document.getElementById(id);
             messageBox.innerHTML = "";
 
-            //  console.log(receivedMessage);
-            const previousTimestamp = newTimestamp;
-            newTimestamp = metrics.getTimestampInMs();
-            histogram.updateLatencyHistogram(latencyHistogram, componentState, metrics.getRoundTripMessageResultInMs(receivedMessage.Timestamp, newTimestamp));
-            histogram.updateDeltaBtwMessHistogram(deltaBtwMessHistogram, componentState, Number(newTimestamp - previousTimestamp));
+
 
             let messageHtml = "<p>Currency :" + receivedMessage.CurrencyType + "</p>";
             messageHtml += "<p>Price :" + receivedMessage.Price + "</p>";

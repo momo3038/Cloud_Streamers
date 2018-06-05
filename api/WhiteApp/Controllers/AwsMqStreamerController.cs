@@ -48,48 +48,56 @@ namespace WhiteApp.Controllers
 
       var writer = new StringWriter();
 
-      using (var connection = factory.CreateConnection(ActiveMqLogin, ActiveMqMdp))
+      string[] currencyPairs = new string[] { "EUR/USD", "EUR/JPY", "EUR/GBP", "USD/JPY", "USD/GBP" };
+      for (int currIndex = 0; currIndex < currencyPairs.Length; currIndex++)
       {
-        connection.Start();
+        var pair = currencyPairs[currIndex];
+       Task.Run(async () =>
+             {
+               using (var connection = factory.CreateConnection(ActiveMqLogin, ActiveMqMdp))
+               {
+                 connection.Start();
 
-        var session = connection.CreateSession(AcknowledgementMode.AutoAcknowledge);
+                 var session = connection.CreateSession(AcknowledgementMode.AutoAcknowledge);
 
-        var topic = new ActiveMQTopic("VirtualTopic.eur_usd");
+                 var topic = new ActiveMQTopic("VirtualTopic." + pair);
 
-        var producer = session.CreateProducer(topic);
+                 var producer = session.CreateProducer(topic);
 
-        producer.DeliveryMode = MsgDeliveryMode.NonPersistent;
+                 producer.DeliveryMode = MsgDeliveryMode.NonPersistent;
 
 
-        for (var i = 0; i <= messageToSend; i++)
-        {
-          var currency = new Currency()
-          {
-            Id = i,
-            CurrencyType = "EUR/USD",
-            Price = rd.NextDouble(),
-            Timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString()
-          };
+                 for (var i = 0; i <= messageToSend; i++)
+                 {
+                   var currency = new Currency()
+                   {
+                     Id = i,
+                     CurrencyType = pair,
+                     Price = rd.NextDouble(),
+                     Timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString(),
+                     Ladders = new LadderFactory().Build(10)
+                   };
 
-          var cur = JsonConvert.SerializeObject(currency);
-          long startTimestamp = Stopwatch.GetTimestamp();
+                   var cur = JsonConvert.SerializeObject(currency);
+                   long startTimestamp = Stopwatch.GetTimestamp();
 
-          producer.Send(session.CreateTextMessage(cur));
+                   producer.Send(session.CreateTextMessage(cur));
 
-          long elapsed = Stopwatch.GetTimestamp() - startTimestamp;
-          histogram.RecordValue(elapsed);
-          await Task.Delay(delayBtwMessageInMs).ConfigureAwait(false);
-        }
-        session.Close();
-        connection.Close();
+                   long elapsed = Stopwatch.GetTimestamp() - startTimestamp;
+                   histogram.RecordValue(elapsed);
+                   await Task.Delay(delayBtwMessageInMs).ConfigureAwait(false);
+                 }
+                 session.Close();
+                 connection.Close();
 
-        var scalingRatio = OutputScalingFactor.TimeStampToMilliseconds;
-        histogram.OutputPercentileDistribution(
-            writer,
-            outputValueUnitScalingRatio: scalingRatio);
-        System.IO.File.WriteAllText(@"d:\cloud\amq.txt", writer.ToString());
+                 var scalingRatio = OutputScalingFactor.TimeStampToMilliseconds;
+                 histogram.OutputPercentileDistribution(
+                     writer,
+                     outputValueUnitScalingRatio: scalingRatio);
+                 System.IO.File.WriteAllText(@"d:\cloud\amq.txt", writer.ToString());
+               }
+             });
       }
-
     }
   }
 }
