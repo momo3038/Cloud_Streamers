@@ -10,9 +10,9 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/WhiteApp/bin/Debug/netcoreapp2.1/AwsWhiteApp.dll",
+            "program": "${workspaceFolder}/AzureWhiteApp/bin/Debug/netcoreapp2.1/AzureWhiteApp.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/WhiteApp",
+            "cwd": "${workspaceFolder}/AzureWhiteApp",
             "stopAtEntry": false,
             "internalConsoleOptions": "openOnSessionStart",
             "launchBrowser": {
