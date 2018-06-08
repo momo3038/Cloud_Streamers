@@ -29,6 +29,7 @@ namespace WhiteApp.Controllers
     {
       var histogram = new LongHistogram(TimeStamp.Hours(1), 3);
 
+
       var writer = new StringWriter();
 
       string[] currencyPairs = new string[] { "EUR/USD", "EUR/JPY", "EUR/GBP", "USD/JPY", "USD/GBP" };

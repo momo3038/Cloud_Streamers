@@ -9,11 +9,11 @@ import * as histogram from "../histogram/utils"
 import * as AWS from 'aws-sdk';
 import { device as _device } from "aws-iot-device-sdk";
 
-function getMessage(message, latencyHistogram, deltaBtwMessHistogram, newTimestamp, componentState) {
+function getMessage(message, latencyHistogram, deltaBtwMessHistogram, newTimestamp, componentState, messCount, pairs) {
   try {
-    // console.log(message);
     const receivedMessage = JSON.parse(message);
 
+    messCount[pairs.indexOf(receivedMessage.CurrencyType)]++;
     const previousTimestamp = newTimestamp;
     newTimestamp = metrics.getTimestampInMs();
     histogram.updateLatencyHistogram(latencyHistogram, componentState, metrics.getRoundTripMessageResultInMs(receivedMessage.Timestamp, newTimestamp));
@@ -37,6 +37,7 @@ function getMessage(message, latencyHistogram, deltaBtwMessHistogram, newTimesta
     let messageHtml = "<p>Currency :" + receivedMessage.CurrencyType + "</p>";
     messageHtml += "<p>Price :" + receivedMessage.Price + "</p>";
     messageHtml += "<p>Mess N°" + receivedMessage.Id + "</p>";
+    messageHtml += "<p>Count " + messCount[pairs.indexOf(receivedMessage.CurrencyType)] + "</p>";
     messageBox.innerHTML = messageHtml;
 
   } catch (error) {
@@ -46,6 +47,8 @@ function getMessage(message, latencyHistogram, deltaBtwMessHistogram, newTimesta
 
 export const startClient = (componentState) => {
 
+  let messCount = [0,0,0,0,0];
+  let pairs = ['EUR/USD', 'EUR/JPY','EUR/GBP','USD/JPY','USD/GBP'];
 
   const latencyHistogram = hdr.build();
   const deltaBtwMessHistogram = hdr.build();
@@ -63,12 +66,12 @@ export const startClient = (componentState) => {
   device
     .on('connect', function () {
       console.log('connect');
-      device.subscribe('EUR/USD');
+      device.subscribe(['EUR/USD', 'EUR/JPY','EUR/GBP','USD/JPY','USD/GBP'], {qos: 0 });
     });
 
   device
     .on('message', function (topic, payload) {
-      getMessage(payload,latencyHistogram, deltaBtwMessHistogram, newTimestamp, componentState);
+      getMessage(payload,latencyHistogram, deltaBtwMessHistogram, newTimestamp, componentState, messCount, pairs);
     });
 
 };

@@ -52,44 +52,50 @@ namespace WhiteApp.Controllers
       var writer = new StringWriter();
 
       var messages = messageToSend;
-      Task.Run(async () =>
+
+      string[] currencyPairs = new string[] { "EUR/USD", "EUR/JPY", "EUR/GBP", "USD/JPY", "USD/GBP" };
+      for (int currIndex = 0; currIndex < currencyPairs.Length; currIndex++)
       {
-        var publisher = new AmazonIotDataClient(IotEndpoint, new BasicAWSCredentials(IotAccessKey, IotSecret));
+        var pair = currencyPairs[currIndex];
 
-        for (var i = 1; i <= messages; i++)
+        Task.Run(async () =>
         {
-          long startTimestamp = Stopwatch.GetTimestamp();
-          long timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-
-          var currency = new Currency()
+          var publisher = new AmazonIotDataClient(IotEndpoint, new BasicAWSCredentials(IotAccessKey, IotSecret));
+          for (var i = 1; i <= messages; i++)
           {
-            Id = i,
-            CurrencyType = "EUR/USD",
-            Price = rd.NextDouble(),
-            Timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString(),
-            Ladders = new LadderFactory().Build(10)
-          };
+            long startTimestamp = Stopwatch.GetTimestamp();
+            long timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-          var cur = JsonConvert.SerializeObject(currency);
+            var currency = new Currency()
+            {
+              Id = i,
+              CurrencyType = pair,
+              Price = rd.NextDouble(),
+              Timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString(),
+              Ladders = new LadderFactory().Build(10)
+            };
 
-          publisher.PublishAsync(new Amazon.IotData.Model.PublishRequest()
-          {
-            Topic = "EUR/USD",
-            Payload = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(cur)),
-            Qos = 1
-          });
+            var cur = JsonConvert.SerializeObject(currency);
 
-          long elapsed = Stopwatch.GetTimestamp() - startTimestamp;
-          histogram.RecordValue(elapsed);
-          await Task.Delay(delayBtwMessageInMs).ConfigureAwait(false);
-        }
+            publisher.PublishAsync(new Amazon.IotData.Model.PublishRequest()
+            {
+              Topic = pair,
+              Payload = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(cur)),
+              Qos = 0
+            });
 
-        var scalingRatio = OutputScalingFactor.TimeStampToMilliseconds;
-        histogram.OutputPercentileDistribution(
-                  writer,
-                  outputValueUnitScalingRatio: scalingRatio);
-        System.IO.File.WriteAllText(@"d:\cloud\appsync.txt", writer.ToString());
-      });
+            long elapsed = Stopwatch.GetTimestamp() - startTimestamp;
+            histogram.RecordValue(elapsed);
+            await Task.Delay(delayBtwMessageInMs).ConfigureAwait(false);
+          }
+
+          var scalingRatio = OutputScalingFactor.TimeStampToMilliseconds;
+          histogram.OutputPercentileDistribution(
+                    writer,
+                    outputValueUnitScalingRatio: scalingRatio);
+          System.IO.File.WriteAllText(@"d:\cloud\appsync.txt", writer.ToString());
+        });
+      }
     }
   }
 }
